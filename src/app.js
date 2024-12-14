@@ -5,8 +5,10 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 
 const { MONGO_URI } = process.env;
 
-const packageJson = require('./package.json');
+const packageJson = require('../package.json');
 process.env.VERSION = packageJson.version;
+
+const updateInfoTask = require("./tasks/updateInfoTask");
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
@@ -22,13 +24,16 @@ mongoose
   )
   .then(() => {
     console.log('connected to database');
-    require('./Domain');
+    require('./domain/hubspot.domain');
 
     // worker setup
-    require('./worker')();
+    //require('./tasks/worker')();
+    updateInfoTask.updateInfoTask.start();
   });
 
 process.env.instance = 'app';
 
 // server setup
 require('./server');
+
+
